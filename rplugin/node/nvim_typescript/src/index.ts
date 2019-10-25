@@ -733,7 +733,7 @@ export default class TSHost {
 
   // autocmd function syncs
   @Function('TSOnBufEnter')
-  async onBufEnter() {
+  async onBufEnter(arg?: [string]) {
     if (this.client.serverHandle == null) {
       await this.tsstart();
     }
@@ -742,6 +742,10 @@ export default class TSHost {
       // const buffer = await this.nvim.buffer;
       // const bufContent = await buffer.getOption('endofline') ? [...(await buffer.lines), '\n'] : await buffer.lines
       // const fileContent = bufContent.join('\n');
+      if (arg && arg[0] !== file) {
+        console.warn('Current buffer no longer file that triggered BufEnter');
+        return;
+      }
       this.client.openFile({ file });
       if (this.enableDiagnostics) {
         await this.onCursorMoved();
